@@ -9,11 +9,11 @@ This project provides modules that automatically flag text data potentially cont
 
 - **Detection approaches**: Both rule-based and ML-based techniques are implemented.
 
-- **Synthetic data**: Generated using the `faker` library and optionally GPT-2 to simulate realistic articles.
+- **Synthetic data**: Generated using the `faker` library and optionally `GPT-2` to simulate realistic articles.
 
 - **PII types considered**: Name, email, address, and phone number.
 
-- **Labelling**: Each sample is labelled with a boolean `flag` indicating whether it contains PII.
+- **Labelling**: Each sample is labelled with a Boolean `flag` indicating whether it contains PII.
 
 - **Evaluation**: Precision, recall, and F1 score calculated using `scikit-learn`.
 
@@ -43,34 +43,27 @@ Three approaches are implemented:
 
 ```bash
 .
-├── main.py                        # Runs all PII detection approaches and evaluates them
 ├── models/
-│   ├── rule_based.py              # Regex-based PII detection
+│   ├── rule_based.py              # Regular expression based PII detection
 │   ├── trained_model_detector.py  # PII detector using fine-tuned DistilBERT
-│   ├── train_model.py             # Trains DistilBERT on generated data
 │   └── transformer_model.py       # PII detection using pretrained NER model
 ├── utils/
-│   ├── data_generator.py          # Generates synthetic text data
+│   ├── data_generator.py          # Generates synthetic text data with / without PII.
 │   └── logger.py                  # Custom logging module
+├── scripts
+│   ├── main_gen_data.py           # Generate data and store in json file
+│   ├── main.py                    # Runs all PII detection approaches and evaluates them
+│   └── train_model.py             # Trains DistilBERT on generated data
 ├── tests/
 │   ├── test_all.bash              # Bash script to run all tests
 │   ├── test_data_generator.py     # Unit tests for synthetic data generation
 │   └── test_pii_detectors.py      # Unit tests for all detection models
+├── data
+│   ├── text_200_030.json          # Data which is used in main.py
+│   └── text_200_050.json          # Data which is used in train_model.py
 ├── requirements.txt
 └── README.md
 ```
-
-
-
-- `utils.data_generator.py`: Generates synthetic articles with/without PII.
-- `models.rule_based.py`: Uses regular expressions to detect PII.
-- `models.transformer_model.py`: 
-- `main.py`: 
-
-### Unit test
-
-- `tests.test_data_generator.py`: Unit tests for synthetic data generation.
-- `tests.test_pii_detectors.py`: 
 
 ## How to Run
 ### 1. Setup python Environment
@@ -85,21 +78,7 @@ $ source .venv/bin/activate
 ```bash
 $ pip install -r requirements.txt
 ```
-### 3. Train the Model
-```bash
-$ python models/train_model.py n_samples
-```
-- Generates n_samples of synthetic data.
-- Trains and saves a fine-tuned `DistilBERT` model to ./pii_model_[n_samples].
-
-### Run the model and evaluation
-
-Runs all 3 detection models and prints evaluation metrics.
-
-```bash
-$ python main.py
-```
-### Run tests
+### 3. Run tests
 
 ```bash
 $ python tests/test_data_generator.py
@@ -108,16 +87,34 @@ $ python tests/test_pii_detectors.py
 $ bash tests/test_all.bash
 ```
 
+### 4. Train the Model
+
+```bash
+$ python scripts/train_model.py n_samples
+```
+
+- Generates n_samples of synthetic data.
+- Trains and saves a fine-tuned `DistilBERT` model to ./pii_model_[n_samples].
+
+### 5. Run the model and evaluation
+
+Runs all 3 detection models and prints evaluation metrics.
+
+```bash
+$ python scripts/main.py
+```
+
 ## Evaluation
+
 Evaluation is performed in `main.py` using a synthetic test set. Metrics used: **Precision**, **Recall**, and **F1 Score**.
 
-| Model Name              | Precision | Recall | F1     |
-| ----------------------- | --------- | ------ | ------ |
-| Rule-Based Model        | 0.3000    | 1.0000 | 0.4615 |
-| Transformer-Based Model | 0.7727    | 0.5667 | 0.6538 |
-| Trained Model Detector  | 1.0000    | 0.9000 | 0.9474 |
+| Model Name              | Prec   | Recall | F1     |
+| ----------------------- | ------ | ------ | ------ |
+| Rule-Based Model        | 0.2700 | 1.0000 | 0.4252 |
+| Transformer-Based Model | 0.7714 | 1.0000 | 0.8710 |
+| Trained Model Detector  | 1.0000 | 0.8519 | 0.9200 |
 
-The trained model achieved the highest overall performance, but may be overfitting due to limited variation in the synthetic dataset.
+The trained model achieved the highest overall performance, but may be over-fitting due to limited variation in the synthetic texts in both training data and test data.
 
 ## Future Work
 
