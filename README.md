@@ -6,17 +6,11 @@ This project provides modules that automatically flag text data potentially cont
 ## Assumptions
 
 - **Data type**: Only textual data is handled in this implementation.
-
 - **Detection approaches**: Both rule-based and ML-based techniques are implemented.
-
 - **Synthetic data**: Generated using the `faker` library and optionally `GPT-2` to simulate realistic articles.
-
 - **PII types considered**: Name, email, address, and phone number.
-
-- **Labelling**: Each sample is labelled with a Boolean `flag` indicating whether it contains PII.
-
+- **Data structure**: Each sample consists of `dataset_id`, `id`, `value` and `flag`. `value` contains text data, `flag` indicates whether it contains PII.
 - **Evaluation**: Precision, recall, and F1 score calculated using `scikit-learn`.
-
 - **Scalability and persistence**: Not addressed (per assignment scope).
 
 
@@ -94,7 +88,7 @@ $ python scripts/train_model.py n_samples
 ```
 
 - Generates n_samples of synthetic data.
-- Trains and saves a fine-tuned `DistilBERT` model to ./pii_model_[n_samples].
+- Trains and saves a fine-tuned `DistilBERT` model to `pii_model_[n_samples]`  in the root directory.
 
 ### 5. Run the model and evaluation
 
@@ -108,18 +102,20 @@ $ python scripts/main.py
 
 Evaluation is performed in `main.py` using a synthetic test set. Metrics used: **Precision**, **Recall**, and **F1 Score**.
 
+The table below shows the evaluation result over 200 synthetic texts (`data/text_200_030.json`). The "Trained Model Detector" was trained on another data set which contains 200 synthetic texts (`data/text_200_050.json`).
+
 | Model Name              | Prec   | Recall | F1     |
 | ----------------------- | ------ | ------ | ------ |
-| Rule-Based Model        | 0.2700 | 1.0000 | 0.4252 |
-| Transformer-Based Model | 0.7714 | 1.0000 | 0.8710 |
-| Trained Model Detector  | 1.0000 | 0.8519 | 0.9200 |
+| Rule-Based Model        | 0.3000 | 1.0000 | 0.4615 |
+| Transformer-Based Model | 0.7763 | 0.9833 | 0.8676 |
+| Trained Model Detector  | 1.0000 | 1.0000 | 1.0000 |
 
 The trained model achieved the highest overall performance, but may be over-fitting due to limited variation in the synthetic texts in both training data and test data.
 
 ## Future Work
 
 - Improve data generation with more diverse sentence structures and edge cases.
+- Real-world data training and testing
 - Fine-tune transformer-based NER models for higher precision and recall.
 - Expand the solution to handle other data modalities (images, audio, video).
 - Explore semi-supervised or human-in-the-loop approaches using data that were verified as correct by the operations team
-- Real-world data training and testing
