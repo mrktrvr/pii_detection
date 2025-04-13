@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import numpy as np
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -19,10 +20,16 @@ def compute_metrics(pred):
     return ret
 
 
-def gen_data(n_samples):
-    from utils.data_generator import generate_dataset
-    logger.info('Genrate data, %d samples' % n_samples)
-    data = generate_dataset(n_samples, pii_ratio=0.5)
+def load_data(n_samples):
+    data_dir = os.path.join(ROOT_DIR, 'data')
+    file_path = os.path.join(data_dir, 'text_200_030.json')
+    if n_samples <= 200 and os.path.exists(file_path):
+        json_data = json.load(open(file_path, 'r'))
+        data = json_data[:n_samples]
+    else:
+        from utils.data_generator import generate_dataset
+        logger.info('Genrate data, %d samples' % n_samples)
+        data = generate_dataset(n_samples, pii_ratio=0.5)
     texts = [item['value'] for item in data]
     labels = [int(item['flag']) for item in data]
     return texts, labels
@@ -87,7 +94,6 @@ def sys_argv():
         logger.warning('n_samples not given, n_samples = %d' % n_samples)
     else:
         n_samples = int(sys.argv[1])
-
     return n_samples
 
 
@@ -116,7 +122,7 @@ def main():
     n_samples = sys_argv()
     output_dir, model_path = res_dirs(n_samples)
     # --- data
-    texts, labels = gen_data(n_samples)
+    texts, labels = load_data(n_samples)
     # --- model
     model, tokenizer = gen_model()
     # --- dataset

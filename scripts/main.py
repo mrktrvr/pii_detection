@@ -1,7 +1,9 @@
+import os
+import json
+
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
-from utils.data_generator import generate_dataset
 from utils.logger import logger
 from models.rule_based import detect_pii as detect_pii_rule_based
 from models.transformer_model import TransformerPIIDetector
@@ -17,12 +19,25 @@ def evaluate_model(data, detector):
     return precision, recall, f1
 
 
+def load_data(n_samples):
+    root_dir = os.path.abspath(os.path.dirname(__file__))
+    data_dir = os.path.join(root_dir, 'data')
+    file_path = os.path.join(data_dir, 'text_200_030.json')
+    if n_samples <= 200 and os.path.exists(file_path):
+        json_data = json.load(open(file_path, 'r'))
+        data = json_data[:n_samples]
+    else:
+        from utils.data_generator import generate_dataset
+        data = generate_dataset(n_samples, pii_ratio=0.3)
+    return data
+
+
 def main():
     logger.setLevel('INFO')
     results = {}
     # --- data
     n_samples = 100
-    data = generate_dataset(n_samples, pii_ratio=0.3)
+    data = load_data(n_samples)
     # --- rule based approach
     logger.info('Rule based')
     precision, recall, f1 = evaluate_model(data, detect_pii_rule_based)
@@ -38,7 +53,7 @@ def main():
     precision, recall, f1 = evaluate_model(data, trained_detector.detect)
     results['Trained Model Detector'] = (precision, recall, f1)
     # --- show results
-    print_text_list = ['']
+    print_text_list = []
     print_text_list.append('|'.join([
         '%25s' % 'Model Name',
         '%6s' % 'Prec',

@@ -1,9 +1,14 @@
+import os
+import sys
 import random
 import uuid
 from faker import Faker
 from transformers import pipeline
 
-from logger import logger
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, ROOT_DIR)
+
+from utils.logger import logger
 
 fake = Faker()
 Faker.seed(0)
@@ -61,6 +66,13 @@ def generate_sample(value_contains_pii=True):
 
 
 def generate_dataset(num_samples=1000, pii_ratio=0.3):
+    '''
+    dataset: list of dictionary
+            dataset_id: dataset_id
+            id: data_id
+            value: text data,
+            flag: bool, has pii or not
+    '''
     logger.info('Gerate %d samples(pii_ratio=%.2f)' % (num_samples, pii_ratio))
     dataset = []
     for _ in range(num_samples):

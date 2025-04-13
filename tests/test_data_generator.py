@@ -15,10 +15,13 @@ class TestDataGenerator(unittest.TestCase):
         self.assertEqual(len(data), 10)
 
     def test_flag_distribution(self):
-        data = generate_dataset(100, pii_ratio=0.25)
+        n_samples = 100
+        data = generate_dataset(n_samples, pii_ratio=0.25)
         flags = [d['flag'] for d in data]
         ratio = sum(flags) / len(flags)
-        self.assertTrue(0.2 < ratio < 0.3)
+        self.assertEqual(len(data), n_samples)
+        self.assertTrue(0.2 < ratio)
+        self.assertTrue(ratio < 0.3)
 
     def test_data_structure(self):
         data = generate_dataset(1)

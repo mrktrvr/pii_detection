@@ -12,7 +12,7 @@ do
 done
 echo "---"
 
-read -p "Press [Enter] key to continue."
+# read -p "Press [Enter] key to continue."
 
 for pyfile in "${UnittestPyfiles[@]}"
 do
