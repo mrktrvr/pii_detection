@@ -1,4 +1,4 @@
-# Human Native Take-Home Assignment
+# Personally Identifiable Information Detection
 
 ## Overview
 This project provides modules that automatically flag text data potentially containing Personally Identifiable Information (PII) using Python. It includes rule-based, transformer-based, and supervised learning approaches.
