@@ -22,14 +22,21 @@ def compute_metrics(pred):
 
 def load_data(n_samples):
     data_dir = os.path.join(ROOT_DIR, 'data')
-    file_path = os.path.join(data_dir, 'text_200_030.json')
-    if n_samples <= 200 and os.path.exists(file_path):
-        json_data = json.load(open(file_path, 'r'))
-        data = json_data[:n_samples]
+    pii_ratio = 0.5
+    file_path = os.path.join(
+        data_dir,
+        'text_%d_%03d.json' % (n_samples, pii_ratio * 100),
+    )
+    if os.path.exists(file_path):
+        data = json.load(open(file_path, 'r'))
+        logger.info('Loaded: %s' % file_path)
     else:
         from utils.data_generator import generate_dataset
         logger.info('Genrate data, %d samples' % n_samples)
-        data = generate_dataset(n_samples, pii_ratio=0.5)
+        data = generate_dataset(n_samples, pii_ratio=pii_ratio)
+        with open(file_path, 'w') as fpw:
+            json.dump(data, fpw)
+        logger.info('Saved: %s' % file_path)
     texts = [item['value'] for item in data]
     labels = [int(item['flag']) for item in data]
     return texts, labels
@@ -119,6 +126,7 @@ def gen_model():
 
 
 def main():
+    logger.setLevel('INFO')
     n_samples = sys_argv()
     output_dir, model_path = res_dirs(n_samples)
     # --- data

@@ -24,15 +24,15 @@ def evaluate_model(data, detector):
     return precision, recall, f1
 
 
-def load_data(n_samples):
+def load_data(n_samples, pii_ratio=0.3):
     data_dir = os.path.join(ROOT_DIR, 'data')
-    file_path = os.path.join(data_dir, 'text_200_030.json')
-    if n_samples <= 200 and os.path.exists(file_path):
-        json_data = json.load(open(file_path, 'r'))
-        data = json_data[:n_samples]
+    file_path = os.path.join(
+        data_dir, 'text_%d_%03d.json' % (n_samples, pii_ratio * 100))
+    if os.path.exists(file_path):
+        data = json.load(open(file_path, 'r'))
     else:
         from utils.data_generator import generate_dataset
-        data = generate_dataset(n_samples, pii_ratio=0.3)
+        data = generate_dataset(n_samples, pii_ratio=pii_ratio)
     return data
 
 
@@ -40,7 +40,7 @@ def main():
     logger.setLevel('INFO')
     results = {}
     # --- data
-    n_samples = 100
+    n_samples = 200
     data = load_data(n_samples)
     # --- rule based approach
     logger.info('Rule based')
