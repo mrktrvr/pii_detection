@@ -1,9 +1,14 @@
 import os
+import sys
 import json
 
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
+
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, ROOT_DIR)
+
 from utils.logger import logger
 from models.rule_based import detect_pii as detect_pii_rule_based
 from models.transformer_model import TransformerPIIDetector
@@ -20,8 +25,7 @@ def evaluate_model(data, detector):
 
 
 def load_data(n_samples):
-    root_dir = os.path.abspath(os.path.dirname(__file__))
-    data_dir = os.path.join(root_dir, 'data')
+    data_dir = os.path.join(ROOT_DIR, 'data')
     file_path = os.path.join(data_dir, 'text_200_030.json')
     if n_samples <= 200 and os.path.exists(file_path):
         json_data = json.load(open(file_path, 'r'))
